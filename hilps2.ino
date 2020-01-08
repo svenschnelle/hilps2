@@ -1,13 +1,14 @@
 #include "src/PS2Keyboard/PS2Keyboard.h"
 
-#define PS2_DATA 2
+#define PS2_DATA 3
 #define PS2_CLK 3
 
-#define PSI 4
-#define PSO 5
-#define PSK 6
-#define HILINT 7
-#define CS 8
+#define PSI 15
+#define PSO 14
+#define PSK 18
+#define HILINT 20
+#define HILNMI 21
+#define CS 19
 
 
 #define HIL_IFC 0
@@ -46,7 +47,6 @@
 #define HIL_X 0x36
 #define HIL_Y 0x62
 #define HIL_Z 0x38
-
 #define HIL_0 0xb4
 #define HIL_1 0x7c
 #define HIL_2 0x7a
@@ -57,7 +57,6 @@
 #define HIL_7 0x70
 #define HIL_8 0xb0
 #define HIL_9 0xb2
-
 #define HIL_SPACE 0xf2
 #define HIL_TAB 0x4c
 #define HIL_ENTER 0xda
@@ -74,20 +73,62 @@
 #define HIL_F6 0xa4
 #define HIL_F7 0xa6
 #define HIL_F8 0xa8
-
+#define HIL_F9 0x4a
+#define HIL_F10 0x42
+#define HIL_F11 0x46
+#define HIL_F12 0x4e
 #define HIL_UP 0xfc
 #define HIL_DOWN 0xfa
 #define HIL_LEFT 0xf8
 #define HIL_RIGHT 0xfe
 #define HIL_ESC 0x3e
+#define HIL_BT 0x7e
+#define HIL_QT 0xd8
+#define HIL_SLASH 0xe6
+#define HIL_COMMA 0xe2
+#define HIL_DOT 0xe4
+#define HIL_NEXT 0xee
+#define HIL_PREV 0xde
+#define HIL_END 0xae // ?
+#define HIL_HOME 0xdc
+#define HIL_RESET 0x0e
+#define HIL_USER 0xa0
+#define HIL_LALT 0x04
+#define HIL_RALT 0x06
+#define HIL_LCTRL 0x0c
+#define HIL_RCTRL 0x0c
+#define HIL_NUM0 0x2c
+#define HIL_NUM1 0x20
+#define HIL_NUM2 0x24
+#define HIL_NUM3 0x28
+#define HIL_NUM4 0x10
+#define HIL_NUM5 0x14
+#define HIL_NUM6 0x18
+#define HIL_NUM7 0x1a
+#define HIL_NUM8 0x12
+#define HIL_NUM9 0x16
+#define HIL_NUM_PLUS 0x26
+#define HIL_NUM_MINUS 0x2e
+#define HIL_NUM_MULT 0x2a
+#define HIL_NUM_DIV 0x22
+#define HIL_NUM_ENTER 0x1e
+#define HIL_NUM_DOT 0x1c
+#define HIL_MENU 0x90
+#define HIL_UND 0xb6
+#define HIL_EQ 0xb8
+#define HIL_LBRK 0xc6
+#define HIL_RBRK 0xc8
+#define HIL_SEMI 0xd6
+#define HIL_PIPE 0xca
+#define HIL_SEL 0xea
 
 static const char hil_keymap[128] = {
 /*           F9          F5    F3    F1    F2   F12  */
-/* 0x00 */ 0x00, 0x00, 0x00, HIL_F5, HIL_F3, HIL_F1, HIL_F2, 0x00,
+/* 0x00 */ HIL_F9, 0x00, 0x00, HIL_F5, HIL_F3, HIL_F1, HIL_F2, HIL_F12,
 /*                F10   F8    F6    F4    TAB    `        */
-/* 0x08 */ 0x00, 0x00, 0x00, 0x00, 0x00, HIL_TAB, 0x00, 0x00,
+/* 0x08 */ 0x00, HIL_F10, HIL_F8, HIL_F9, 0x00, HIL_TAB, HIL_BT, 0x00,
 /*               LALT  LSHF        LCTRL  Q     1         */
-/* 0x10 */ 0x00, 0x00, HIL_LSH, 0x00, 0x00, HIL_Q, HIL_1, 0x00,
+/* 0x10 */ 0x00, HIL_LALT, HIL_LSH, 0x00, HIL_LCTRL, HIL_Q, HIL_1, 0x00,
 /*                      Z     S     A     W     2    LGUI */
 /* 0x18 */ 0x00, 0x00, HIL_Z, HIL_S, HIL_A, HIL_W, HIL_2, 0x00,
 /*                 C    X     D     E     4     3         */
@@ -99,40 +140,40 @@ static const char hil_keymap[128] = {
 /*                      M     J     U     7     8         */
 /* 0x38 */ 0x00, 0x00, HIL_M, HIL_J, HIL_U, HIL_7, HIL_8, 0x00,
 /*                ,     K     I     O     0     9         */
-/* 0x40 */ 0x00, 0x00, HIL_K, HIL_I, HIL_O, HIL_0, HIL_9, 0x00,
+/* 0x40 */ 0x00, HIL_COMMA, HIL_K, HIL_I, HIL_O, HIL_0, HIL_9, 0x00,
 /*                .     /     L           P     -         */
-/* 0x48 */ 0x00, 0x00, 0x00, HIL_L, 0x00, HIL_P, 0x00, 0x00,
+/* 0x48 */ 0x00, HIL_DOT, HIL_SLASH, HIL_L, HIL_SEMI, HIL_P, HIL_UND, 0x00,
 /*                      '           [     =               */
-/* 0x50 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/* 0x50 */ 0x00, 0x00, HIL_QT, 0x00, HIL_LBRK, HIL_EQ, 0x00, 0x00,
 /*         CAPS  RSHFT ENTER  ]           \               */
-/* 0x58 */ HIL_CAPS, HIL_RSH, HIL_ENTER, 0x00, 0x00, 0x00, 0x00, 0x00,
+/* 0x58 */ HIL_CAPS, HIL_RSH, HIL_ENTER, HIL_RBRK, 0x00, 0x00, 0x00, 0x00,
 /*                                       BKSP             */
-/* 0x60 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, HIL_BS, 0x00,
+/* 0x60 */ 0x00, HIL_PIPE, 0x00, 0x00, 0x00, 0x00, HIL_BS, 0x00,
 /*                                                       */
-/* 0x68 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/* 0x68 */ 0x00, HIL_NUM1, 0x00, HIL_NUM4, HIL_NUM7, 0x00, 0x00, 0x00,
 /*                                       ESC   NUM        */
-/* 0x70 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, HIL_ESC, 0x00,
+/* 0x70 */ HIL_NUM0, HIL_NUM_DOT, HIL_NUM2, HIL_NUM5, HIL_NUM6, HIL_NUM8, HIL_ESC, HIL_MENU,
 /*          F11                                SCRL       */
-/* 0x78 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+/* 0x78 */ HIL_F11, HIL_NUM_PLUS, HIL_NUM3, HIL_NUM_MINUS, HIL_NUM_MULT, HIL_NUM9, HIL_USER, 0x00,
 };
 
 static const char hil_extkeymap[128] = {
   /* 0x00 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x08 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  /* 0x10 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /* 0x10 */ 0x00, HIL_RALT, 0x00, 0x00, HIL_RCTRL, 0x00, 0x00, 0x00,
   /* 0x18 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x20 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  /* 0x28 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /* 0x28 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, HIL_SEL,
   /* 0x30 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x38 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x40 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  /* 0x48 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /* 0x48 */ 0x00, 0x00, HIL_NUM_DIV, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x50 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  /* 0x58 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /* 0x58 */ 0x00, 0x00, HIL_NUM_ENTER, 0x00, 0x00, 0x00, 0x00, 0x00,
   /* 0x60 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  /* 0x68 */ 0x00, 0x00, 0x00, HIL_LEFT, 0x00, 0x00, 0x00, 0x00,
+  /* 0x68 */ 0x00, HIL_END, 0x00, HIL_LEFT, HIL_HOME, 0x00, 0x00, 0x00,
   /* 0x70 */ 0x00, HIL_DEL, HIL_DOWN, 0x00, HIL_RIGHT, HIL_UP, 0x00, 0x00,
-  /* 0x78 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /* 0x78 */ 0x00, 0x00, HIL_NEXT, 0x00, HIL_RESET, HIL_PREV, 0x00, 0x00,
 
 };
 
@@ -165,7 +206,6 @@ static int hil_read_bit(void)
 
 static void hil_write(int reg, int bits, uint16_t data)
 {
-  //Serial.println(data, HEX);
     digitalWrite(CS, HIGH);
     hil_send_bit(0); /* Write */
     hil_send_bit(reg); /* Reg number */
@@ -226,15 +266,10 @@ static uint8_t mapkey(bool isext, bool isbreak, uint8_t c)
 
 static void handle_hil_command(int addr, uint8_t data)
 {
-    char buf[16];
-    int count = 0;
-    uint8_t c;
-    bool hdr;
-    
-    if (data != 0 && data != 0x10) {
-        sprintf(buf, "addr %d, command %02x\n", addr, data);
-        Serial.print(buf);
-    }
+  int count = 0;
+  uint8_t c;
+  bool hdr;
+  char buf[16];
 
   switch(data) {
     case HIL_IFC:
@@ -265,8 +300,6 @@ static void handle_hil_command(int addr, uint8_t data)
         myaddr = data & 7;
         data &= ~7;
         data |= (addr + 1) & 7;
-        sprintf(buf, "my addr: %d\n", myaddr);
-        Serial.print(buf);
         hil_setup(0, myaddr);
         hil_send_command(0, data);
         break;
@@ -302,8 +335,7 @@ static void handle_hil_command(int addr, uint8_t data)
       break;
 
     default:
-      sprintf(buf, "addr %d, command %02x\n", addr, data);
-      Serial.print(buf);
+      break;
  }
 }
 
@@ -313,17 +345,25 @@ void setup() {
   pinMode(PSK, OUTPUT);
   pinMode(HILINT, INPUT);
   pinMode(CS, OUTPUT);  
+
   Serial.begin(115200);
-  Serial.print("startup\n");
+  
   keyboard.begin(PS2_DATA, PS2_CLK);
   hil_setup(0, 0);
 }
 
 void loop() {  
+  if (!digitalRead(HILNMI)) {
+    while(!digitalRead(HILNMI));
+   hil_setup(0, 0);
+    myaddr = 0;
+    delay(10);
+  }
+
   if (!digitalRead(HILINT)) {
       uint16_t data = hil_read(0, 13);
       if (data & 0x800) {
         handle_hil_command((data >> 8) & 7, data & 0xff);
       }       
-  }
+  }  
 }

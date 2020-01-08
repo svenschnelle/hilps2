@@ -127,7 +127,7 @@ void PS2Keyboard::begin(uint8_t data_pin, uint8_t irq_pin, const PS2Keymap_t &ma
   pinMode(data_pin, INPUT);
   digitalWrite(data_pin, HIGH);
 #endif
-  
+ 
   switch(irq_pin) {
     #ifdef CORE_INT0_PIN
     case CORE_INT0_PIN:
